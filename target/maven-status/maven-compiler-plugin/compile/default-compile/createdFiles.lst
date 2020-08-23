@@ -1,0 +1,11 @@
+org/acme/facilitylocation/domain/FacilityLocationProblem.class
+org/acme/facilitylocation/bootstrap/DemoDataGenerator.class
+org/acme/facilitylocation/bootstrap/DemoDataBuilder.class
+org/acme/facilitylocation/domain/Location.class
+org/acme/facilitylocation/rest/SolverResource.class
+org/acme/facilitylocation/domain/FacilityLocationConstraintProvider.class
+org/acme/facilitylocation/persistence/FacilityLocationProblemRepository.class
+org/acme/facilitylocation/domain/Facility.class
+org/acme/facilitylocation/domain/Consumer.class
+org/acme/facilitylocation/domain/FacilityLocationConstraintConfiguration.class
+org/acme/facilitylocation/rest/Status.class

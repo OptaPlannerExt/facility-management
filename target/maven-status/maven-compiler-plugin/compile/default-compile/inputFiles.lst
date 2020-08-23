@@ -1,0 +1,11 @@
+/opt/pam/optaplanner/facility-location/src/main/java/org/acme/facilitylocation/rest/Status.java
+/opt/pam/optaplanner/facility-location/src/main/java/org/acme/facilitylocation/domain/FacilityLocationProblem.java
+/opt/pam/optaplanner/facility-location/src/main/java/org/acme/facilitylocation/bootstrap/DemoDataBuilder.java
+/opt/pam/optaplanner/facility-location/src/main/java/org/acme/facilitylocation/bootstrap/DemoDataGenerator.java
+/opt/pam/optaplanner/facility-location/src/main/java/org/acme/facilitylocation/domain/Consumer.java
+/opt/pam/optaplanner/facility-location/src/main/java/org/acme/facilitylocation/domain/Location.java
+/opt/pam/optaplanner/facility-location/src/main/java/org/acme/facilitylocation/domain/FacilityLocationConstraintProvider.java
+/opt/pam/optaplanner/facility-location/src/main/java/org/acme/facilitylocation/persistence/FacilityLocationProblemRepository.java
+/opt/pam/optaplanner/facility-location/src/main/java/org/acme/facilitylocation/domain/Facility.java
+/opt/pam/optaplanner/facility-location/src/main/java/org/acme/facilitylocation/rest/SolverResource.java
+/opt/pam/optaplanner/facility-location/src/main/java/org/acme/facilitylocation/domain/FacilityLocationConstraintConfiguration.java

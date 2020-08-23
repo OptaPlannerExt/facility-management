@@ -1,0 +1,3 @@
+org/acme/facilitylocation/solver/SolverManagerTest.class
+org/acme/facilitylocation/bootstrap/DemoDataBuilderTest.class
+org/acme/facilitylocation/domain/FacilityLocationConstraintProviderTest.class
