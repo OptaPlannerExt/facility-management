@@ -5,6 +5,7 @@ import static java.lang.Math.sqrt;
 
 import org.optaplanner.core.api.domain.entity.PlanningEntity;
 import org.optaplanner.core.api.domain.variable.PlanningVariable;
+import org.acme.facilitylocation.domain.Location;
 
 /**
  * Consumer has a demand that can be satisfied by <em>any</em> {@link Facility} with a sufficient capacity.

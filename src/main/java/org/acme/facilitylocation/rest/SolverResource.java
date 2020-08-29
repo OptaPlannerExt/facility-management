@@ -1,5 +1,17 @@
 package org.acme.facilitylocation.rest;
 
+
+// For Keycloak
+/* import javax.annotation.security.RolesAllowed;
+import javax.inject.Inject;
+
+
+import org.jboss.resteasy.annotations.cache.NoCache;
+import io.quarkus.security.identity.SecurityIdentity;
+import io.quarkus.security.Authenticated;
+*/
+// End Keycloak
+
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -21,8 +33,11 @@ import org.optaplanner.core.api.solver.SolverManager;
 @Path("/flp")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
+//@Authenticated
 public class SolverResource {
 
+    /* @Inject
+    SecurityIdentity securityIdentity;*/
 
     private static final long PID = 0L;
 
@@ -42,12 +57,20 @@ public class SolverResource {
     }
 
     private Status statusFromSolution(FacilityLocationProblem solution) {
+	/*System.out.println("Summary Begin");
+	System.out.println(scoreManager.explainScore(solution).getSummary());
+	System.out.println("Summary End");
+	System.out.println("Status Begin");
+	System.out.println(solverManager.getSolverStatus(PID));
+	System.out.println("Status End");*/
         return new Status(solution, scoreManager.explainScore(solution).getSummary(), solverManager.getSolverStatus(PID));
     }
 
     @GET
     @Path("status")
+    //@RolesAllowed("user")
     @Produces(MediaType.APPLICATION_JSON)
+    //@NoCache
     public Status status() {
         Optional.ofNullable(solverError.getAndSet(null)).ifPresent(throwable -> { 
 		throw new RuntimeException("Solver failed", throwable);
@@ -57,7 +80,9 @@ public class SolverResource {
 
     @POST
     @Path("solve")
+    //@RolesAllowed("user")
     @Produces(MediaType.APPLICATION_JSON)
+    //@NoCache
     public void solve() {
         Optional<FacilityLocationProblem> maybeSolution = repository.solution();
         maybeSolution.ifPresent(facilityLocationProblem -> solverManager.solveAndListen(
@@ -69,7 +94,9 @@ public class SolverResource {
 
     @POST
     @Path("stopSolving")
+    //@RolesAllowed("user")
     @Produces(MediaType.APPLICATION_JSON)
+    //@NoCache
     public void stopSolving() {
         solverManager.terminateEarly(PID);
     }

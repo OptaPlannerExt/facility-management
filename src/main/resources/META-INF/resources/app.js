@@ -44,6 +44,7 @@ const fetchHeaders = {
   headers: {
     'Content-Type': 'application/json',
     'Accept': 'application/json',
+    //'Authorization': 'Bearer ' + token,
   },
 };
 
@@ -74,6 +75,7 @@ fetchHeadersSlv = {
   headers: {
     'Content-Type': 'application/json',
     'Accept': 'application/json',
+    'Authorization': 'Bearer ' + document.getElementById("ctoken").value,
   },
 };
   fetch('/flp/solve', { ...fetchHeadersSlv, method: 'POST' })
@@ -96,6 +98,7 @@ fetchHeadersStp = {
   headers: {
     'Content-Type': 'application/json',
     'Accept': 'application/json',
+    'Authorization': 'Bearer ' + document.getElementById("ctoken").value,
   },
 };
 
@@ -174,9 +177,11 @@ const autoRefresh = () => {
   }
 };
 
-const facilityPopupContent = (facility, cost) => `<h5>Facility ${facility.id}</h5>
+const facilityPopupContent = (facility, cost) => `<h5>Tower ${facility.id}</h5>
 <ul class="list-unstyled">
 <li>Usage: ${facility.usedCapacity}/${facility.capacity}</li>
+<li>Fiber Pull Distance: ${Math.ceil(facility.fiberPullDistance)}</li>
+<li>Fiber cost: ${facility.fiberPullTotalCost}</li>
 <li>Setup cost: ${cost}</li>
 </ul>`;
 
@@ -204,15 +209,19 @@ const showProblem = ({ solution, scoreExplanation, isSolving }) => {
     const color = facility.used ? colorByFacility(facility) : { color: 'white' };
     const icon = facility.used ? defaultIcon : greyIcon;
     const marker = getFacilityMarker(facility);
+	const fiberSetupCost = facility.fiberPullTotalCost != 0 ? "$"+facility.fiberPullTotalCost: "-";
+	const fiberPullDistance = facility.fiberPullDistance != 0 ? Math.ceil(facility.fiberPullDistance): "-";
     marker.setIcon(icon);
     marker.setPopupContent(facilityPopupContent(facility, longCostFormat.format(facility.setupCost)));
     facilitiesTable.append(`<tr class="${used ? 'table-active' : 'text-muted'}">
 <td><span data-toggle="tooltip" title="${color.color}"
 style="background-color: ${color.color}; display: inline-block; width: 1rem; height: 1rem;">
-</span></td><td>Facility ${id}</td>
+</span></td><td>Tower ${id}</td>
 <td><div class="progress">
-<div class="progress-bar" role="progressbar" style="width: ${percentage}%">${usedCapacity}/${capacity}</div>
+<div class="progress-bar" role="progressbar" style="width: (${percentage}+10)%">${usedCapacity}/${capacity}</div>
 </div></td>
+<td class="text-right">${fiberPullDistance}</td>
+<td class="text-right">${fiberSetupCost}</td>
 <td class="text-right">${shortCostFormat.format(setupCost)}</td>
 </tr>`);
   });

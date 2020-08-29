@@ -1,8 +1,6 @@
 package org.acme.facilitylocation.domain;
 
 import static org.optaplanner.core.api.score.stream.ConstraintCollectors.sumLong;
-import static org.optaplanner.core.api.score.stream.ConstraintCollectors.sum;
-import org.optaplanner.core.api.score.buildin.hardsoft.HardSoftScore;
 import org.optaplanner.core.api.score.stream.Constraint;
 import org.optaplanner.core.api.score.stream.ConstraintFactory;
 import org.optaplanner.core.api.score.stream.ConstraintProvider;
@@ -23,20 +21,21 @@ public class FacilityLocationConstraintProvider implements ConstraintProvider {
 
 
     Constraint facilityFiberReq(ConstraintFactory constraintFactory) {
-        return constraintFactory.from(Consumer.class)
-                .filter((facility) -> facility.getFacility().isFiberReq() == true)
+        return constraintFactory.from(Facility.class)
+                .filter((facility) -> facility.isFiberReq() == true)
                 .penalizeConfigurableLong(
                         FacilityLocationConstraintConfiguration.FIBER_REQUIRED,
-                        (facility) -> 5);
+                        (facility) -> facility.getFiberPullTotalCost());
     }     
 
     
     Constraint facilityHeight(ConstraintFactory constraintFactory) {
-        return constraintFactory.from(Consumer.class)
-                .filter((facility) ->  facility.getFacility().getHeight() >= 80)
+        return constraintFactory.from(Facility.class)
+                .filter((facility) ->  facility.isUsed())
+                .filter((facility) ->  facility.getHeight() >= 80)
                 .rewardConfigurableLong(
                         FacilityLocationConstraintConfiguration.FACILITY_HEIGHT,
-                        (facility)-> facility.getFacility().getSetupCost());
+                        (facility)-> facility.getHeight() - 80);
     } 
     
     
@@ -63,7 +62,7 @@ public class FacilityLocationConstraintProvider implements ConstraintProvider {
                 .groupBy(Consumer::getFacility)
                 .penalizeConfigurableLong(
                         FacilityLocationConstraintConfiguration.FACILITY_SETUP_COST,
-                        Facility::getSetupCost);
+                        (facility) -> facility.getSetupCost());
     }
 
     Constraint distanceFromFacility(ConstraintFactory constraintFactory) {
@@ -72,6 +71,6 @@ public class FacilityLocationConstraintProvider implements ConstraintProvider {
                 .penalizeConfigurableLong(
                         FacilityLocationConstraintConfiguration.DISTANCE_FROM_FACILITY,
                         Consumer::distanceFromFacility);
-    }   
-    
+    }    
+
 }

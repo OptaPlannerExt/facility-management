@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.acme.facilitylocation.domain.Consumer;
+import org.acme.facilitylocation.domain.DistanceCalculator;
 import org.acme.facilitylocation.domain.Facility;
 import org.acme.facilitylocation.domain.FacilityLocationProblem;
 import org.acme.facilitylocation.domain.Location;
@@ -25,7 +26,8 @@ public class DemoDataBuilder {
     private long setupCostStandardDeviation;
     private Location southWestCorner;
     private Location northEastCorner;
-
+    private DistanceCalculator distCalc = new DistanceCalculator();
+    
     private DemoDataBuilder() {
     }
 
@@ -106,9 +108,13 @@ public class DemoDataBuilder {
                         (sequence.get() == 2 || sequence.get() == 3 || sequence.get() == 5),
                         ((sequence.get() % 2 == 0)? 80:60),
                         capacity / facilityCount,
-                        ((sequence.get() % 2 == 0)? true:false)))
+                        ((sequence.get() % 2 == 0)? true:false),
+                        10)
+                	)
                 .limit(facilityCount)
                 .collect(Collectors.toList());
+        
+        
         List<Consumer> consumers = Stream.generate(locationSupplier)
                 .map(location -> new Consumer(
                         sequence.incrementAndGet(),
@@ -116,7 +122,10 @@ public class DemoDataBuilder {
                         demand / consumerCount))
                 .limit(consumerCount)
                 .collect(Collectors.toList());
+        
 
-        return new FacilityLocationProblem(facilities, consumers, southWestCorner, northEastCorner);
+        facilities = distCalc.FacilityDistanceCalculator(facilities,"m");
+        FacilityLocationProblem flp = new FacilityLocationProblem(facilities, consumers, southWestCorner, northEastCorner);
+        return flp;
     }
 }

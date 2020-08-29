@@ -20,8 +20,10 @@ public class Facility {
     private long setupCost;
     private long height;
     private boolean fiberReq;
-    private long fiberCost;
-    private boolean fixedFacility;
+    private long fiberSetupUnitCost;
+    private long fiberPullTotalCost;
+	private double fiberPullDistance;
+	private boolean fixedFacility;
     private long capacity;
 
     @InverseRelationShadowVariable(sourceVariableName = "facility")
@@ -32,7 +34,7 @@ public class Facility {
 
     public Facility(long id, Location location, long setupCost, 
     				boolean fixedFacility, long height, 
-    				long capacity, boolean fiberReq) {
+    				long capacity, boolean fiberReq, long fiberSetupUnitCost) {
         this.id = id;
         this.location = location;
         this.setupCost = setupCost;
@@ -40,6 +42,7 @@ public class Facility {
         this.height = height;
         this.capacity = capacity;
         this.fiberReq = fiberReq;
+        this.fiberSetupUnitCost = fiberSetupUnitCost;
     }
 
     public long getId() {
@@ -107,14 +110,30 @@ public class Facility {
 		this.fiberReq = fiberReq;
 	}
 
-	public long isFiberCost() {
-		return fiberCost;
+	public long getFiberSetupUnitCost() {
+		return fiberSetupUnitCost;
 	}
 
-	public void setFiberCost(long fiberCost) {
-		this.fiberCost = fiberCost;
+	public void setFiberSetupUnitCost(long fiberSetupUnitCost) {
+		this.fiberSetupUnitCost = fiberSetupUnitCost;
 	}    
-    
+
+    public double getFiberPullDistance() {
+		return fiberPullDistance;
+	}
+
+	public void setFiberPullDistance(double fiberPullDistance) {
+		this.fiberPullDistance = fiberPullDistance;
+	}	
+
+    public long getFiberPullTotalCost() {
+		return fiberPullTotalCost;
+	}
+
+	public void setFiberPullTotalCost(long fiberPullTotalCost) {
+		this.fiberPullTotalCost = fiberPullTotalCost;
+	}	
+	
     @Override
     public String toString() {
         return "Facility " + id +
