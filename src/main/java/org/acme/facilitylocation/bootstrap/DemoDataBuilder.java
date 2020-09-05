@@ -105,7 +105,7 @@ public class DemoDataBuilder {
                         sequence.incrementAndGet(),
                         location,
                         averageSetupCost + (long) (setupCostStandardDeviation * random.nextGaussian()),
-                        (sequence.get() == 2 || sequence.get() == 3 || sequence.get() == 5),
+                        false,
                         ((sequence.get() % 2 == 0)? 80:60),
                         capacity / facilityCount,
                         ((sequence.get() % 2 == 0)? true:false),

@@ -25,6 +25,7 @@ const facilityByIdMap = new Map();
 const solveButton = $('#solveButton');
 const stopSolvingButton = $('#stopSolvingButton');
 const facilitiesTable = $('#facilities');
+const facilitiesSummaryTable = $('#summaryDetails');
 
 const colorById = (i) => colors[i % colors.length];
 const colorByFacility = (facility) => facility === null ? {} : { color: colorById(facility.id) };
@@ -75,10 +76,11 @@ fetchHeadersSlv = {
   headers: {
     'Content-Type': 'application/json',
     'Accept': 'application/json',
-    'Authorization': 'Bearer ' + document.getElementById("ctoken").value,
+    //'Authorization': 'Bearer ' + document.getElementById("ctoken").value,
   },
 };
-  fetch('/flp/solve', { ...fetchHeadersSlv, method: 'POST' })
+  fetch('/flp/solve', { ...fetchHeadersSlv, method: 'POST',
+											body: ( JSON.stringify( $( "#fixedFacility:checked" ).serializeArray()).replace(/\t/g, '  ')) })
     .then((response) => {
       if (!response.ok) {
         return handleErrorResponse('Start solving failed', response);
@@ -116,7 +118,7 @@ fetchHeadersStp = {
 
 const formatErrorResponseBody = (body) => {
   // JSON must not contain \t (Quarkus bug)
-  const json = JSON.parse(body.replace(/\t/g, '  '));
+  const json = JSON.parse(JSON.stringify(body.replace(/\t/g, '  ')));
   return `${json.details}\n${json.stack}`;
 };
 
@@ -159,10 +161,12 @@ const showError = (message, stackTrace) => {
 
 const updateSolvingStatus = (solving) => {
   if (solving) {
+	$("input[id='fixedFacility']").prop("disabled", true);
     solveButton.hide();
     stopSolvingButton.show();
   } else {
     autoRefreshCount = 0;
+	$("input[id='fixedFacility']").prop("disabled", false);
     solveButton.show();
     stopSolvingButton.hide();
   }
@@ -177,7 +181,7 @@ const autoRefresh = () => {
   }
 };
 
-const facilityPopupContent = (facility, cost) => `<h5>Tower ${facility.id}</h5>
+const facilityPopupContent = (facility, cost) => `<h5>Facility ${facility.id}</h5>
 <ul class="list-unstyled">
 <li>Usage: ${facility.usedCapacity}/${facility.capacity}</li>
 <li>Fiber Pull Distance: ${Math.ceil(facility.fiberPullDistance)}</li>
@@ -192,6 +196,8 @@ const getFacilityMarker = ({ id, location }) => {
   }
   marker = L.marker(location);
   marker.addTo(facilityGroup).bindPopup();
+  //L.circleMarker(location,{ color: '#fd5363', weight: 1, fillColor: '#fd5363', fillOpacity: 0.3, radius: 50 }).addTo(facilityGroup);
+  //circle = L.circle(location,(1 * 1609.344), { color: '#fd5363', weight: 1, fillColor: '#fd5363', fillOpacity: 0.3}).addTo(facilityGroup);
   facilityByIdMap.set(id, marker);
   return marker;
 };
@@ -207,6 +213,7 @@ const showProblem = ({ solution, scoreExplanation, isSolving }) => {
     const { id, setupCost, capacity, usedCapacity, used } = facility;
     const percentage = usedCapacity / capacity * 100;
     const color = facility.used ? colorByFacility(facility) : { color: 'white' };
+	const checked = facility.fixedFacility ? " checked " : ""
     const icon = facility.used ? defaultIcon : greyIcon;
     const marker = getFacilityMarker(facility);
 	const fiberSetupCost = facility.fiberPullTotalCost != 0 ? "$"+facility.fiberPullTotalCost: "-";
@@ -214,17 +221,18 @@ const showProblem = ({ solution, scoreExplanation, isSolving }) => {
     marker.setIcon(icon);
     marker.setPopupContent(facilityPopupContent(facility, longCostFormat.format(facility.setupCost)));
     facilitiesTable.append(`<tr class="${used ? 'table-active' : 'text-muted'}">
+<td><input type="checkbox" name="Facility ${id}" id="fixedFacility" value=${id} ${checked}></td>
 <td><span data-toggle="tooltip" title="${color.color}"
-style="background-color: ${color.color}; display: inline-block; width: 1rem; height: 1rem;">
-</span></td><td>Tower ${id}</td>
+style="background-color: ${color.color}; display: inline-block; width: 1rem; height: 1rem;" onClick="javascript:alert(${facility.used})">
+</span></td><td>Facility ${id}</td>
 <td><div class="progress">
 <div class="progress-bar" role="progressbar" style="width: (${percentage}+10)%">${usedCapacity}/${capacity}</div>
 </div></td>
-<td class="text-right">${fiberPullDistance}</td>
-<td class="text-right">${fiberSetupCost}</td>
 <td class="text-right">${shortCostFormat.format(setupCost)}</td>
 </tr>`);
   });
+// <td class="text-right">${fiberPullDistance}</td>
+// <td class="text-right">${fiberSetupCost}</td>
   // Consumers
   consumerGroup.clearLayers();
   solution.consumers.forEach((consumer) => {
@@ -234,6 +242,37 @@ style="background-color: ${color.color}; display: inline-block; width: 1rem; hei
       L.polyline([consumer.location, consumer.facility.location], color).addTo(consumerGroup);
     }
   });
+
+  // Facility Summary Table
+  facilitiesSummaryTable.children().remove();
+  solution.facilities.forEach((facility) => {
+	const color = facility.used ? colorByFacility(facility) : { color: 'white' };
+	if(facility.used == true){
+		totalSetupCost = facility.setupCost;
+		fiberSetUpCost = "-";
+		fiberPullDistance = "-";		
+		
+		if(facility.fiberReq == true){
+		  	fiberSetUpCost = (facility.fiberSetupUnitCost) *  Math.ceil(facility.fiberPullDistance);
+			totalSetupCost = totalSetupCost + fiberSetUpCost;
+			fiberSetUpCost = shortCostFormat.format(fiberSetUpCost);
+			fiberPullDistance = Math.ceil(facility.fiberPullDistance);
+		  }
+// 			<td class="td1"><span data-toggle="tooltip" title="${color.color}"style="background-color: ${color.color}; display: inline-block; width: 1rem; height: 1rem;" onClick="javascript:alert(${facility.used})"></span></td>
+		  facilityLatiLong = facility.location.toString().split(",");
+		  facilitiesSummaryTable.append(`<tr class="tr1">
+
+			<td class="td1">Facility${facility.id}&nbsp;&nbsp;</td>
+			<td class="td1">${parseFloat(facilityLatiLong[0]).toFixed(4)} / ${parseFloat(facilityLatiLong[1]).toFixed(4)}</td>
+			<td class="td1">${fiberPullDistance}</td>
+			<td class="td1">${fiberSetUpCost}</td>
+			<td class="td1">${facility.height}</td>
+			<td class="td1">${shortCostFormat.format(facility.setupCost)}</td>
+			<td class="td1">${shortCostFormat.format(totalSetupCost)}</td>
+			</tr>`);
+	}
+  });
+
   // Summary
   $('#score').text(solution.score);
   $('#cost').text(longCostFormat.format(solution.totalCost));
@@ -277,3 +316,4 @@ solveButton.click(solve);
 stopSolvingButton.click(stopSolving);
 
 updateSolvingStatus();
+

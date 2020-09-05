@@ -15,7 +15,57 @@
         integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN"
         crossorigin="anonymous">
 
-  <title>Tower Location - OptaPlanner Quarkus quickstart</title>
+  <title>Facility Location - OptaPlanner Quarkus quickstart</title>
+    <!-- <script src="http://0.0.0.0:8080/auth/js/keycloak.js"></script> -->
+    <script>
+
+       /* var keycloak = new Keycloak('keycloak.json');
+        keycloak.init({onLoad: 'login-required'});
+	keycloak.onAuthSuccess = function() { document.getElementById("ctoken").value = keycloak.token;}
+	function logoutKC(){ keycloak.logout(); } */
+
+	function show() {
+		  document.getElementById("summary").style.display = "block";
+		}
+
+		function hide() {
+		  document.getElementById("summary").style.display = "none";
+		}
+	
+    </script>
+    <style>
+    .facList {
+        height: 600px;
+   		overflow-x: auto;
+   		overflow-y: auto;
+   			
+	}
+	.table1 {
+	  font-family: arial, sans-serif;
+	  border: 1px solid #767c77;
+	  border-collapse: separate;
+	  border-spacing: 1px;
+	  width: 100%;
+	}
+	
+	.td1 {
+	  text-align: center;
+	  border: 0px solid #767c77;
+	}
+		
+	.th1 {
+	  padding: 8px;	
+	  border: 0px solid #767c77;
+	  text-align: center;
+	  background-color: #E2EFDA;
+	}
+	
+	.tr1:nth-child(even) {
+	  
+	  background-color: #dddddd;
+	  width: 100%;
+	}	
+    </style>
 </head>
 <body >
 <!-- <div id="Status" style="width:100%;height:100px;overflow:scroll;">
@@ -29,7 +79,7 @@ Testing
 <div class="container-fluid">
   <div class="row">
     <div class="col-7 col-lg-8 col-xl-9">
-      <div id="map" style="width: 100%; height: 100vh;"></div>
+      <div id="map" style="width: 100%; height: 100vh;"></div>     
     </div>
     <div class="col-5 col-lg-4 col-xl-3" style="height: 100vh; overflow-y: scroll;">
       <div class="row pt-2 row-cols-1">
@@ -40,9 +90,9 @@ Testing
           <button id="stopSolvingButton" type="button" class="btn btn-danger">
             <i class="fa fa-stop"></i> Stop solving
           </button>
-          <!-- <button id="logoutButton" type="button" class="btn btn-success" onClick="JavaScript:logoutKC();">
+          <button id="logoutButton" type="button" class="btn btn-success" onClick="JavaScript:logoutKC();">
             Logout
-          </button> -->
+          </button>
         </div>
         <div class="col">
           <h5>
@@ -60,27 +110,37 @@ Testing
               <td>Total cost:</td>
               <td><span id="cost">unknown</span> (<span id="cost-percentage">unknown</span>%)</td>
             </tr>
-            <!-- <tr>
-              <td>Total distance:</td>
-              <td><span id="distance">unknown</span></td>
-            </tr> -->
+<!--             <tr> -->
+<!--               <td>Total distance:</td> -->
+<!--               <td><span id="distance">unknown</span></td> -->
+<!--             </tr> -->
+<!--             <tr> -->
+<!--               <td colspan=2	> -->
+<!--               <a href="#" class="float-left" data-toggle="modal" data-target="#summary"> -->
+<!--               Facility List Solution</a> -->
+<!--               </td> -->
+<!--             </tr> -->
           </table>
         </div>
-        <div class="" width="100%">
-          <h5>Tower list</h5>
+        <div class="col" width="100%">
+          <h5>Facility List
+           <a href="#" class="float-right" data-toggle="modal" data-target="#summary">
+              <i class="fa fa-info-circle"></i>
+            </a>&nbsp;&nbsp;</h5>
           <table class="table-sm w-100" style="font-size:14px;">
             <thead>
+<!--             <tr> -->
+<!--               <th  colspan=3 /> -->
+<!--               <th  colspan=2 style="text-align:center">Fiber</th>  -->
+<!--               <th  colspan=1/> -->
+<!--             </tr> -->
             <tr>
-              <th  colspan=3 />
-              <th  colspan=2 style="text-align:center">Fiber</th> 
-              <th  colspan=1/>
-            </tr>
-            <tr>
+              <th></th>
               <th style="width: 1rem"></th>
               <th>Name</th>
               <th>Usage</th>
-              <th >Dist. (m)</th> 
-              <th >Cost</th>              
+<!--               <th >Dist. (m)</th>  -->
+<!--               <th >Cost</th>               -->
               <th class="text-right">Setup cost</th>
             </tr>
             </thead>
@@ -107,8 +167,43 @@ Testing
     </div>
   </div>
 </div>
+
+<div class="modal fade" id="summary" tabindex="-1" role="dialog">
+  <div class="modal-dialog modal-lg" role="dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5>Facilities List Summary</h5>
+        <button type="button" class="close" data-dismiss="modal">
+          <span>&times;</span>
+        </button>
+      </div>
+      <div class="modal-body facList">
+        <pre id="scoreInfo1">
+          <table width="100%" class="table1">
+            <thead>
+            <tr class="tr1">
+<!--               <th class="th1"></th> -->
+              <th class="th1">Id</th>
+              <th class="th1">Latitude/Longitude</th>
+              <th class="th1">Fiber Dist. (m)</th> 
+              <th class="th1">Fiber Cost ($)</th>         
+              <th class="th1">Facility Height (m)</th>     
+              <th class="th1">Facility Setup Cost ($)</th>
+              <th class="th1">Total Setup Cost ($)</th>
+            </tr>
+            </thead>
+            <tbody id="summaryDetails">
+            </tbody>
+          </table>        
+        </pre>
+      </div>
+    </div>
+  </div>
+</div>
+
 <input type="hidden" tabindex=1 id="ctoken" name="token">
-<script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js" integrity="sha512-gZwIG9x3wUXg2hdXF6+rVkLF/0Vi9U8D2Ntg4Ga5I5BZpVkVxlJWbSQtXPSiUTtC0TjtGOmxa1AJPuV0CPthew==" crossorigin="anonymous"></script> 
+<!-- <script src="https://cdn-webgl.eegeo.com/eegeojs/api/v0.1.780/eegeo.js"></script> -->
+<script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js" integrity="sha512-gZwIG9x3wUXg2hdXF6+rVkLF/0Vi9U8D2Ntg4Ga5I5BZpVkVxlJWbSQtXPSiUTtC0TjtGOmxa1AJPuV0CPthew==" crossorigin="anonymous"></script>
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
@@ -116,3 +211,4 @@ Testing
 
 </body>
 </html>
+

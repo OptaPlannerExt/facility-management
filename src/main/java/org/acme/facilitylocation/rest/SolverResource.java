@@ -1,6 +1,10 @@
 package org.acme.facilitylocation.rest;
 
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 // For Keycloak
 /* import javax.annotation.security.RolesAllowed;
 import javax.inject.Inject;
@@ -22,10 +26,16 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
+import org.acme.facilitylocation.domain.Facility;
 import org.acme.facilitylocation.domain.FacilityLocationProblem;
+import org.acme.facilitylocation.domain.FacilityLocationData;
 import org.acme.facilitylocation.persistence.FacilityLocationProblemRepository;
 import org.optaplanner.core.api.score.ScoreManager;
 import org.optaplanner.core.api.solver.SolverManager;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.jsontype.impl.AsArrayTypeDeserializer;
 
 
 
@@ -51,7 +61,7 @@ public class SolverResource {
 			  SolverManager<FacilityLocationProblem, Long> solverManager,
             		  ScoreManager<FacilityLocationProblem> scoreManager) {
         
-	this.repository = repository;
+    	this.repository = repository;
         this.solverManager = solverManager;
         this.scoreManager = scoreManager;
     }
@@ -82,9 +92,22 @@ public class SolverResource {
     @Path("solve")
     //@RolesAllowed("user")
     @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
     //@NoCache
-    public void solve() {
-        Optional<FacilityLocationProblem> maybeSolution = repository.solution();
+    public void solve(List<FacilityLocationData> fixedFacilities) {    	
+    	Optional<FacilityLocationProblem> maybeSolution = repository.solution();
+    	List<Facility> solFacilities = maybeSolution.get().getFacilities();
+    	for(Facility fac : solFacilities) {
+    		fac.setFixedFacility(false);
+    		for(FacilityLocationData fac1 : fixedFacilities) {
+    			if(fac.getId() == Long.parseLong(fac1.getValue())) {
+    				fac.setFixedFacility(true);
+    			}else {
+    				
+    			}
+    		}
+    	}
+
         maybeSolution.ifPresent(facilityLocationProblem -> solverManager.solveAndListen(
                 PID,
                 id -> facilityLocationProblem,
@@ -101,3 +124,4 @@ public class SolverResource {
         solverManager.terminateEarly(PID);
     }
 }
+
