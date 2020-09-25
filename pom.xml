@@ -6,7 +6,7 @@
   <artifactId>facility-location</artifactId>
   <version>1.0.0-SNAPSHOT</version>
   <properties>
-    <quarkus.org.optaplanner>8.0.0-SNAPSHOT</quarkus.org.optaplanner>
+    <quarkus.org.optaplanner>7.43.1.Final</quarkus.org.optaplanner>
     <compiler-plugin.version>3.8.1</compiler-plugin.version>
     <maven.compiler.parameters>true</maven.compiler.parameters>
     <maven.compiler.source>11</maven.compiler.source>

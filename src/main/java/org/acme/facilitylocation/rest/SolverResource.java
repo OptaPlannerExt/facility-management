@@ -1,8 +1,6 @@
 package org.acme.facilitylocation.rest;
 
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 // For Keycloak
@@ -34,10 +32,6 @@ import org.optaplanner.core.api.score.ScoreManager;
 import org.optaplanner.core.api.score.buildin.hardsoftlong.HardSoftLongScore;
 import org.optaplanner.core.api.solver.SolverManager;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.jsontype.impl.AsArrayTypeDeserializer;
-
 
 
 
@@ -56,11 +50,11 @@ public class SolverResource {
 
     private final FacilityLocationProblemRepository repository;
     private final SolverManager<FacilityLocationProblem, Long> solverManager;
-    private final ScoreManager<FacilityLocationProblem, HardSoftLongScore> scoreManager;
+    private final ScoreManager<FacilityLocationProblem> scoreManager;
 
     public SolverResource(FacilityLocationProblemRepository repository,
 			  SolverManager<FacilityLocationProblem, Long> solverManager,
-            		  ScoreManager<FacilityLocationProblem, HardSoftLongScore> scoreManager) {
+            		  ScoreManager<FacilityLocationProblem> scoreManager) {
         
     	this.repository = repository;
         this.solverManager = solverManager;
@@ -74,7 +68,7 @@ public class SolverResource {
 	System.out.println("Status Begin");
 	System.out.println(solverManager.getSolverStatus(PID));
 	System.out.println("Status End");*/
-        return new Status(solution, scoreManager.explainScore(solution).getSummary(), solverManager.getSolverStatus(PID));
+        return new Status(solution, scoreManager.explainScore(solution), solverManager.getSolverStatus(PID));
     }
 
     @GET
